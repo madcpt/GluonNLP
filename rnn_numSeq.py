@@ -46,6 +46,15 @@ class RNNModel(nn.Block):
     def begin_state(self, *args, **kwargs):
         return self.rnn.begin_state(*args, **kwargs)
 
+def grad_clipping(params, theta, ctx):
+    norm = nd.array([0], ctx)
+    for param in params:
+        norm += (param.grad ** 2).sum()
+    norm = norm.sqrt().asscalar()
+    if norm > theta:
+        for param in params:
+            param.grad[:] *= theta / norm
+
 num_hidden = 32
 rnn_layer = rnn.RNN(num_hidden)
 rnn_layer.initialize()
@@ -60,7 +69,7 @@ num_steps = 3
 ctx = gpu()
 model = RNNModel(rnn_layer, data_size)
 
-num_epochs, lr, clipping_theta = 500, 1e-1, 1e-2
+num_epochs, lr, clipping_theta = 1000, 3e0, 1e-2
 pred_period = 50
 
 loss = gloss.SoftmaxCrossEntropyLoss()
@@ -81,6 +90,8 @@ for epoch in range(num_epochs):
             y = Y.T.reshape((-1,))
             l = loss(output, y).mean()
         l.backward()
+        params = [p.data() for p in model.collect_params().values()]
+        grad_clipping(params, clipping_theta, ctx)
         trainer.step(1)
         l_sum += l.asscalar() * y.size
         n += y.size
