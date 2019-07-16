@@ -115,6 +115,9 @@ def train_and_predict_rnn_gluon(model, num_hiddens, vocab_size, ctx,
             corpus_indices, batch_size, num_steps, ctx)
         state = model.begin_state(batch_size=batch_size, ctx=ctx)
         for X, Y in data_iter:
+            if(epoch == 1 or epoch == 0):
+                print(X)
+                print(Y)
             for s in state:
                 s.detach()
             with autograd.record():
@@ -122,13 +125,14 @@ def train_and_predict_rnn_gluon(model, num_hiddens, vocab_size, ctx,
                 y = Y.T.reshape((-1,))
                 l = loss(output, y).mean()
             l.backward()
+            
             # 梯度裁剪
             params = [p.data() for p in model.collect_params().values()]
             grad_clipping(params, clipping_theta, ctx)
             trainer.step(1)  # 因为已经误差取过均值，梯度不用再做平均
             l_sum += l.asscalar() * y.size
             n += y.size
-
+        
         if (epoch + 1) % pred_period == 0:
             print('epoch %d, perplexity %f, time %.2f sec' % (
                 epoch + 1, math.exp(l_sum / n), time.time() - start))
