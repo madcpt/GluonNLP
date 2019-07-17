@@ -115,9 +115,9 @@ def train_and_predict_rnn_gluon(model, num_hiddens, vocab_size, ctx,
             corpus_indices, batch_size, num_steps, ctx)
         state = model.begin_state(batch_size=batch_size, ctx=ctx)
         for X, Y in data_iter:
-            if(epoch == 1 or epoch == 0):
-                print(X)
-                print(Y)
+            # if(epoch == 1 or epoch == 0):
+            #     print(X)
+            #     print(Y)
             for s in state:
                 s.detach()
             with autograd.record():
@@ -142,7 +142,7 @@ def train_and_predict_rnn_gluon(model, num_hiddens, vocab_size, ctx,
                     char_to_idx))
 
 num_epochs, batch_size, lr, clipping_theta = 250, 32, 1e2, 1e-2
-pred_period, pred_len, prefixes = 50, 50, ['日', '操']
+pred_period, pred_len, prefixes = 5, 50, ['日', '操']
 train_and_predict_rnn_gluon(model, num_hiddens, vocab_size, ctx,
                             corpus_indices, idx_to_char, char_to_idx,
                             num_epochs, num_steps, lr, clipping_theta,
