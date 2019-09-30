@@ -56,15 +56,15 @@ def grad_clipping(params, theta, ctx):
             param.grad[:] *= theta / norm
 
 num_hidden = 32
-rnn_layer = rnn.RNN(num_hidden)
+
+# rnn_layer = rnn.RNN(num_hidden)
+# rnn_layer = rnn.LSTM(num_hidden)
+rnn_layer = rnn.GRU(num_hidden)
+
 rnn_layer.initialize()
 
 batch_size = 2
-# state = rnn_layer.begin_state(batch_size=batch_size)
-
 num_steps = 3
-# X = nd.random.uniform(shape=(num_steps, batch_size, data_size))
-# Y, state = rnn_layer(X, state)
 
 ctx = gpu()
 model = RNNModel(rnn_layer, data_size)

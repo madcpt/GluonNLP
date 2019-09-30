@@ -3,7 +3,7 @@ import random
 import time
 import zipfile
 
-from mxnet import autograd, gluon, gpu, init, nd
+from mxnet import autograd, cpu, gluon, gpu, init, nd
 from mxnet.gluon import loss as gloss
 from mxnet.gluon import nn, rnn
 
@@ -87,9 +87,13 @@ num_hiddens = 512
 batch_size = 10
 num_steps = 2
 
-ctx = gpu()
+try:
+    ctx = gpu(0)
+    _ = nd.array([0], ctx=ctx)
+except:
+    ctx = cpu()
 
-num_epochs, lr, clipping_theta = 500, 1e1, 1e-2
+num_epochs, lr, clipping_theta = 1, 1e1, 1e-2
 pred_period, pred_len = 30, 100
 
 gru_layer = rnn.GRU(num_hiddens)
