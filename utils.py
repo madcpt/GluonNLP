@@ -1,7 +1,18 @@
-from mxnet import nd
 import logging
 import time
 
+from mxnet import nd
+
+
+def draw(p1, display=False): 
+    import matplotlib.pyplot as plt
+    plt.figure('Draw')
+    plt.plot(p1)
+    plt.savefig("easyplot01.png")
+    if display:
+        plt.draw()  
+        plt.pause(5)  
+    plt.close()
 
 def get_logger(filename):
     logger = logging.getLogger(__name__)
@@ -37,15 +48,14 @@ def data_iter_consecutive(corpus_indices, batch_size, num_steps, ctx=None, logge
         Y = indices[:, i + 1: i + num_steps + 1]
         yield X, Y
 
-
 if __name__ == '__main__':
     corpus_indices = list(range(11))[1:]
     batch_size = 2
     num_steps = 3
 
     data_iter = data_iter_consecutive(corpus_indices, batch_size, num_steps)
-    for i, (X, Y) in enumerate(data_iter):
-        logger.debug('epoch {}'.format(i))
-        logger.debug('X: {}'.format(str(X)))
-        logger.debug('Y: {}'.format(str(Y)))
-        logger.debug()
+    # for i, (X, Y) in enumerate(data_iter):
+    #     logger.debug('epoch {}'.format(i))
+    #     logger.debug('X: {}'.format(str(X)))
+    #     logger.debug('Y: {}'.format(str(Y)))
+    #     logger.debug()
